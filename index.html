@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instituto Tecnológico de Huejutla - Validador de Número de Control</title>
+    <style>
+        :root {
+            --primary-color: #1a4f8b;
+            --secondary-color: #c41230;
+            --accent-color: #f8f9fa;
+            --text-color: #333333;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            color: var(--text-color);
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem 0;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            width: 100px;
+            height: 100px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 20px;
+        }
+
+        .logo span {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .university-name {
+            text-align: left;
+        }
+
+        .university-name h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .university-name h2 {
+            margin: 5px 0 0;
+            font-size: 20px;
+            font-weight: normal;
+        }
+
+        main {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .form-title {
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: #0d3d6e;
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .error {
+            color: var(--secondary-color);
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo-container">
+                <div class="logo">
+                    <span>ITH</span>
+                </div>
+                <div class="university-name">
+                    <h1>Instituto Tecnológico de Huejutla</h1>
+                    <h2>Tecnológico Nacional de México</h2>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <h2 class="form-title">Validación de Número de Control</h2>
+        
+        <form id="controlForm" onsubmit="return false;">
+            <div class="form-group">
+                <label for="controlNumber">Número de Control:</label>
+                <input type="text" id="controlNumber" maxlength="8" required placeholder="Ejemplo: 20840024">
+                <div id="yearError" class="error">El año debe estar entre 2000 y 2024</div>
+                <div id="techError" class="error">El código del tecnológico debe ser 84 (ITH Huejutla)</div>
+                <div id="seqError" class="error">El número consecutivo debe ser de 4 dígitos</div>
+                <div id="formatError" class="error">El formato debe ser: YYXXXZZZ (Y=año, X=código tech, Z=consecutivo)</div>
+            </div>
+            <button id="submitBtn" disabled>Validar Número</button>
+        </form>
+    </main>
+
+    <footer>
+        <p>© 2024 Instituto Tecnológico de Huejutla - Todos los derechos reservados</p>
+    </footer>
+
+    <script>
+        const controlInput = document.getElementById('controlNumber');
+        const submitBtn = document.getElementById('submitBtn');
+        const yearError = document.getElementById('yearError');
+        const techError = document.getElementById('techError');
+        const seqError = document.getElementById('seqError');
+        const formatError = document.getElementById('formatError');
+
+        controlInput.addEventListener('input', validateControl);
+
+        function validateControl() {
+            const value = controlInput.value;
+            let isValid = true;
+            
+            // Reset errors
+            yearError.style.display = 'none';
+            techError.style.display = 'none';
+            seqError.style.display = 'none';
+            formatError.style.display = 'none';
+
+            // Check format
+            if (!/^\d{8}$/.test(value)) {
+                formatError.style.display = 'block';
+                isValid = false;
+                submitBtn.disabled = true;
+                return;
+            }
+
+            // Validate year
+            const year = parseInt(value.substring(0, 2)) + 2000;
+            if (year < 2000 || year > 2024) {
+                yearError.style.display = 'block';
+                isValid = false;
+            }
+
+            // Validate tech code
+            const techCode = value.substring(2, 4);
+            if (techCode !== '84') {
+                techError.style.display = 'block';
+                isValid = false;
+            }
+
+            // Validate sequence number
+            const seqNumber = value.substring(4, 8);
+            if (!/^\d{4}$/.test(seqNumber)) {
+                seqError.style.display = 'block';
+                isValid = false;
+            }
+
+            submitBtn.disabled = !isValid;
+        }
+
+        submitBtn.addEventListener('click', function() {
+            alert('Número de control válido: ' + controlInput.value);
+        });
+    </script>
+</body>
+</html>
